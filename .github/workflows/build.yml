@@ -47,6 +47,6 @@ jobs:
           kubectl apply -f deployment.yaml -n app-dev
           kubectk apply -f service.yaml -n app-dev
           kubectl apply -f cluster-issuer.yaml -n app-dev
+          kubectl apply -f certificate.yaml -n app-dev
           kubectl apply -f ingress.yaml -n app-dev
-
           kubectl rollout restart deployment pi-ui -n app-dev
