@@ -30,7 +30,7 @@ jobs:
         context: .
         push: true
         platforms: linux/arm64,linux/amd64
-        tags: erickhdez1997/pi-ui:latest
+        tags: erickhdez1997/pi-ui:dev
 
     - name: Deploy to Raspberry Pi (K3s)
       uses: appleboy/ssh-action@v0.1.10

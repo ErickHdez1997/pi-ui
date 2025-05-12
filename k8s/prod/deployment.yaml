@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: pi-ui
-          image: yourdockerhubusername/pi-ui:latest
+          image: erickhdez1997/pi-ui:latest
           ports:
             - containerPort: 80
           env:
