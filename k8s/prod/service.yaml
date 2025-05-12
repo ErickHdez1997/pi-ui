@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: pi-ui
-  namespace: app-prod
+  namespace: app-dev
 spec:
   selector:
     app: pi-ui
