@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pi-ui
+  namespace: app-prod
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: pi-ui
+  template:
+    metadata:
+      labels:
+        app: pi-ui
+    spec:
+      containers:
+        - name: pi-ui
+          image: yourdockerhubusername/pi-ui:latest
+          ports:
+            - containerPort: 80
+          env:
+            - name: API_URL
+              value: "https://api.yourdomain.com"

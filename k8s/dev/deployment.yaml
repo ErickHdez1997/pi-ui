@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pi-ui
+  namespace: app-dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pi-ui
+  template:
+    metadata:
+      labels:
+        app: pi-ui
+    spec:
+      containers:
+        - name: pi-ui
+          image: yourdockerhubusername/pi-ui:dev
+          ports:
+            - containerPort: 80
+          env:
+            - name: API_URL
+              value: "http://backend.app-dev.svc.cluster.local:8080"
