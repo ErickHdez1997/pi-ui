@@ -44,5 +44,5 @@ jobs:
           cd /home/${{ secrets.PI_USER }}/kube-manifests
           git pull
           cd ~/kube-manifests/k8s/dev
-          kubectl apply -f pi-ui-deployment.yaml -n app-dev
+          kubectl apply -f deployment.yaml -n app-dev
           kubectl rollout restart deployment pi-ui -n app-dev
