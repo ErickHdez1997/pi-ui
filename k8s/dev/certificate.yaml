@@ -1,0 +1,14 @@
+# certificate.yaml
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: duckdns-cert
+  namespace: app-dev
+spec:
+  secretName: duckdns-cert-tls
+  issuerRef:
+    name: letsencrypt-dev
+    kind: ClusterIssuer
+  commonName: ehpi.duckdns.org
+  dnsNames:
+  - ehpi.duckdns.org

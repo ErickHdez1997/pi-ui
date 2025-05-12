@@ -4,11 +4,11 @@ metadata:
   name: pi-ui-ingress
   namespace: app-dev
   annotations:
-    cert-manager.io/cluster-issuer: "letsencrypt-dev"
-    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    cert-manager.io/cluster-issuer: letsencrypt-dev
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
 spec:
   rules:
-  - host: mypi.duckdns.org  # Change to your DuckDNS domain
+  - host: ehpi.duckdns.org
     http:
       paths:
       - path: /
@@ -21,4 +21,4 @@ spec:
   tls:
   - hosts:
     - ehpi.duckdns.org
-    secretName: pi-ui-tls
+    secretName: duckdns-cert-tls
