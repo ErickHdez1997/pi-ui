@@ -4,11 +4,11 @@ metadata:
   name: letsencrypt-dev
 spec:
   acme:
+    email: erick.hdez199721@gmail.com
     server: https://acme-v02.api.letsencrypt.org/directory
-    email: Erick.Hdez199721@gmail.com  # Change this
     privateKeySecretRef:
-      name: letsencrypt-dev
+      name: letsencrypt-dev-account-key
     solvers:
     - http01:
         ingress:
-          class: traefik
+          class: nginx
