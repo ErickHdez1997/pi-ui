@@ -43,7 +43,6 @@ jobs:
           # Clone the repository on the Raspberry Pi
           cd /home/${{ secrets.PI_USER }}
           git clone https://github.com/ErickHdez1997/pi-ui.git kube-manifests
-          cd ~/kube-manifests
-          git pull
+          cd ~/kube-manifests/k8s/dev
           kubectl apply -f pi-ui-deployment.yaml -n app-dev
           kubectl rollout restart deployment pi-ui -n app-dev
