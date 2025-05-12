@@ -30,4 +30,4 @@ jobs:
         context: .
         push: true
         platforms: linux/arm64,linux/amd64
-        tags: yourdockerhubusername/your-app-name:latest
+        tags: erickhdez1997/pi-ui:latest
