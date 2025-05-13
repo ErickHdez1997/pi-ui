@@ -4,8 +4,9 @@ metadata:
   name: pi-ui-ingress
   namespace: app-dev
   annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-dev
-    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    kubernetes.io/ingress.class: "traefik"
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    traefik.ingress.kubernetes.io/router.tls.certresolver: "letsencrypt"
 spec:
   rules:
   - host: ehpi.duckdns.org
@@ -21,4 +22,4 @@ spec:
   tls:
   - hosts:
     - ehpi.duckdns.org
-    secretName: duckdns-cert-tls
+    secretName: pi-app-tls
