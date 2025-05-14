@@ -41,6 +41,7 @@ jobs:
         key: ${{ secrets.PI_SSH_KEY }}
         script: |
           # Clone the repository on the Raspberry Pi
+          export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
           cd /home/${{ secrets.PI_USER }}/kube-manifests
           git pull
           cd ~/kube-manifests/k8s/dev
