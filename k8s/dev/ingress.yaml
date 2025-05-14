@@ -1,13 +1,17 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: pi-ui-ingress
+  name: pi-ui-dev-ingress
   namespace: app-dev
   annotations:
-    kubernetes.io/ingress.class: "traefik"
-    traefik.ingress.kubernetes.io/router.tls: "true"
-    traefik.ingress.kubernetes.io/router.tls.certresolver: "letsencrypt"
+    cert-manager.io/cluster-issuer: letsencrypt-dev
+    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
+  ingressClassName: "nginx"
+  tls:
+  - hosts:
+    - ehpi.duckdns.org
+    secretName: ehpi-duckdns-tls
   rules:
   - host: ehpi.duckdns.org
     http:
@@ -16,10 +20,6 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: pi-ui
+            name: pi-ui-dev
             port:
               number: 80
-  tls:
-  - hosts:
-    - ehpi.duckdns.org
-    secretName: pi-app-tls
