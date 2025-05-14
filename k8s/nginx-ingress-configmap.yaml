@@ -1,9 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: ingress-nginx
-  namespace: ingress-nginx
-data:
-  # You can add specific configuration here if needed
-  enable-vts-status: "true"
-  use-http2: "true"
