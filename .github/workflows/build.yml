@@ -39,8 +39,9 @@ jobs:
         push: true
         platforms: linux/arm64,linux/amd64
         tags: erickhdez1997/pi-ui:dev
-        cache-from: type=local,src=/tmp/.buildx-cache
-        cache-to: type=local,dest=/tmp/.buildx-cache,mode=max
+        # cache-from: type=local,src=/tmp/.buildx-cache
+        # cache-to: type=local,dest=/tmp/.buildx-cache,mode=max
+        no-cache: true   # <-- Force bypass cache
 
     - name: Deploy to Raspberry Pi (K3s)
       uses: appleboy/ssh-action@v0.1.10
