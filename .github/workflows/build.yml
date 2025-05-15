@@ -42,25 +42,6 @@ jobs:
     #     cache-from: type=local,src=/tmp/.buildx-cache
     #     cache-to: type=local,dest=/tmp/.buildx-cache,mode=max
 
-    - name: Create SSH key
-      run: |
-        mkdir -p ~/.ssh
-        echo "${{ secrets.PI_SSH_KEY }}" > ~/.ssh/private.key
-        chmod 600 ~/.ssh/private.key
-    - name: Execute SSH command
-      run: |
-        ssh -i ~/.ssh/private.key -o StrictHostKeyChecking=no github@ssh.qtpis.com 
-        "export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
-         cd ~/kube-manifests
-         git pull
-        cd ~/kube-manifests/k8s/dev
-        kubectl apply -f deployment.yaml -n app-dev
-        kubectl apply -f service.yaml -n app-dev
-        kubectl apply -f cluster-issuer.yaml -n app-dev
-        kubectl apply -f certificate.yaml -n app-dev
-        kubectl apply -f ingress.yaml -n app-dev
-        kubectl rollout restart deployment pi-ui -n app-dev"
-
     # - name: Install cloudflared
     #   run: |
     #       curl -L https://pkg.cloudflare.com/cloudflare-main.gpg | sudo tee /usr/share/keyrings/cloudflare-archive-keyring.gpg >/dev/null
