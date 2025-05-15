@@ -44,45 +44,67 @@ jobs:
 
     # - name: Install cloudflared
     #   run: |
-    #     curl -L https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb -o cloudflared.deb
-    #     sudo dpkg -i cloudflared.deb
+    #       curl -L https://pkg.cloudflare.com/cloudflare-main.gpg | sudo tee /usr/share/keyrings/cloudflare-archive-keyring.gpg >/dev/null
+    #       echo "deb [signed-by=/usr/share/keyrings/cloudflare-archive-keyring.gpg] https://pkg.cloudflare.com/cloudflared $(lsb_release -cs) main" | sudo tee  /etc/apt/sources.list.d/cloudflared.list
+    #       sudo apt update
+    #       sudo apt install cloudflared
+              
+    - name: Install cloudflared
+      run: |
+        curl -L https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb -o cloudflared.deb
+        sudo dpkg -i cloudflared.deb
 
-    # - name: Deploy to Raspberry Pi (K3s) via Cloudflare Tunnel
-    #   env:
-    #     CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
-    #     CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
-    #   run: |
-    #     ssh -o StrictHostKeyChecking=no \
-    #     -o ProxyCommand="cloudflared access ssh --hostname ${{ secrets.PI_IP }}" \
-    #     ${{ secrets.PI_USER }}@${{ secrets.PI_IP }} << 'EOF'
-    #     export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
-    #     cd /home/${{ secrets.PI_USER }}/kube-manifests
-    #     git pull
-    #     cd ~/kube-manifests/k8s/dev
-    #     kubectl apply -f deployment.yaml -n app-dev
-    #     kubectl apply -f service.yaml -n app-dev
-    #     kubectl apply -f cluster-issuer.yaml -n app-dev
-    #     kubectl apply -f certificate.yaml -n app-dev
-    #     kubectl apply -f ingress.yaml -n app-dev
-    #     kubectl rollout restart deployment pi-ui -n app-dev
-    #     EOF
-
-    - name: Deploy to Raspberry Pi (K3s)
-      uses: appleboy/ssh-action@v0.1.10
-      with:
-        host: ${{ secrets.DUCK_DNS_HOST }}
-        port: 22
-        username: ${{ secrets.PI_USER }}
-        key: ${{ secrets.PI_SSH_KEY }}
-        script: |
-          # Clone the repository on the Raspberry Pi
+    - name: SSH to Pi via Cloudflare Tunnel and Deploy
+      run: |
+        cloudflared access ssh --hostname ssh.qtpis.com --client-id ${{ secrets.CF_ACCESS_CLIENT_ID }} --client-secret ${{ secrets.CF_ACCESS_CLIENT_SECRET }} -- ssh -o StrictHostKeyChecking=no github@ssh.qtpis.com << 'EOF'
           export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
-          cd /home/${{ secrets.PI_USER }}/kube-manifests
+          cd ~/kube-manifests
           git pull
           cd ~/kube-manifests/k8s/dev
           kubectl apply -f deployment.yaml -n app-dev
-          kubectk apply -f service.yaml -n app-dev
+          kubectl apply -f service.yaml -n app-dev
           kubectl apply -f cluster-issuer.yaml -n app-dev
           kubectl apply -f certificate.yaml -n app-dev
           kubectl apply -f ingress.yaml -n app-dev
           kubectl rollout restart deployment pi-ui -n app-dev
+        EOF
+
+    # - name: Deploy to Raspberry Pi (K3s)
+    #   uses: appleboy/ssh-action@v0.1.10
+    #   with:
+    #     host: ${{ secrets.DUCK_DNS_HOST }}
+    #     port: 22
+    #     username: ${{ secrets.PI_USER }}
+    #     key: ${{ secrets.PI_SSH_KEY }}
+    #     script: |
+    #       # Clone the repository on the Raspberry Pi
+    #       export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+    #       cd /home/${{ secrets.PI_USER }}/kube-manifests
+    #       git pull
+    #       cd ~/kube-manifests/k8s/dev
+    #       kubectl apply -f deployment.yaml -n app-dev
+    #       kubectk apply -f service.yaml -n app-dev
+    #       kubectl apply -f cluster-issuer.yaml -n app-dev
+    #       kubectl apply -f certificate.yaml -n app-dev
+    #       kubectl apply -f ingress.yaml -n app-dev
+    #       kubectl rollout restart deployment pi-ui -n app-dev
+
+    # - name: Deploy to Raspberry Pi (K3s)
+    #   jobs:
+    #     ssh_command:
+    #         if: github.event.pull_request.merged == true
+    #         name: Run SSH command
+    #       needs: terraform_apply
+    #       runs-on: ubuntu-latest
+    #       steps:
+    #         - name: Connect and run command on remote server
+    #           uses: and-fm/cloudflared-ssh-action@v3
+    #           with:
+    #             host: ${{ secrets.SSH_HOST }}
+    #             username: ${{ secrets.SSH_USERNAME }}
+    #             private_key_filename: ${{ secrets.SSH_PRIVATE_KEY_FILENAME }}
+    #             private_key_value: ${{ secrets.SSH_PRIVATE_KEY_VALUE }}
+    #             port: ${{ secrets.SSH_PORT }}
+    #             service_token_id: ${{ secrets.SERVICE_TOKEN_ID }}
+    #             service_token_secret: ${{ secrets.SERVICE_TOKEN_SECRET }}
+    #             commands: mkdir hello-world -v
