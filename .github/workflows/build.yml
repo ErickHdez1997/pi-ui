@@ -32,21 +32,21 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-buildx-
 
-    # - name: Build & Push Docker Image
-    #   uses: docker/build-push-action@v5
-    #   with:
-    #     context: .
-    #     push: true
-    #     platforms: linux/arm64,linux/amd64
-    #     tags: erickhdez1997/pi-ui:dev
-    #     cache-from: type=local,src=/tmp/.buildx-cache
-    #     cache-to: type=local,dest=/tmp/.buildx-cache,mode=max
+    - name: Build & Push Docker Image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: true
+        platforms: linux/arm64,linux/amd64
+        tags: erickhdez1997/pi-ui:dev
+        cache-from: type=local,src=/tmp/.buildx-cache
+        cache-to: type=local,dest=/tmp/.buildx-cache,mode=max
 
     - name: Deploy to Raspberry Pi (K3s)
       uses: appleboy/ssh-action@v0.1.10
       with:
         # host: ${{ secrets.DUCK_DNS_HOST }}
-        host: 99.45.241.235
+        host: ${{ secrets.IP_ADDRESS }}
         port: 22
         username: ${{ secrets.PI_USER }}
         key: ${{ secrets.PI_SSH_KEY }}
