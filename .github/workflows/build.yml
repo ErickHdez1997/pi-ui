@@ -99,14 +99,20 @@ jobs:
     - name: Forward SSH Port
       uses: selfagency/ssh-port-forward-action@v1.0.5
       with:
-        ssh-host: ehpi.duckdns.org # Pi's public IP or domain name
-        ssh-port: 22 # Forwarded port (e.g., 2222)
+        ssh-host: ehpi.duckdns.org  # Pi's public IP or domain name
+        ssh-port: 22                # Remote Pi's SSH port
         ssh-user: github
-        ssh-key: ${{ secrets.PI_SSH_KEY }} # Your SSH key
-        local-port: 22 # Local port on runner
+        ssh-key: ${{ secrets.PI_SSH_KEY }}
+        local-port: 2222            # ⚠️ Forward to unprivileged port!
         remote-host: localhost
-        remote-port: 22 # Pi's internal SSH port
-        script: | 
+        remote-port: 22             # Pi's internal SSH port
+        script: |
+          echo "SSH port forwarding established to localhost:2222"
+
+    - name: Deploy to Raspberry Pi (K3s)
+      run: |
+        ssh -o StrictHostKeyChecking=no -p 2222 pi@localhost 
+        'echo Hello from Pi && hostname'
          # Clone the repository on the Raspberry Pi
           sudo export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
           cd /home/${{ secrets.PI_USER }}/kube-manifests
