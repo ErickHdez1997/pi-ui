@@ -32,22 +32,47 @@ jobs:
         platforms: linux/arm64,linux/amd64
         tags: erickhdez1997/pi-ui:dev
 
-    - name: Deploy to Raspberry Pi (K3s)
-      uses: appleboy/ssh-action@v0.1.10
-      with:
-        host: ${{ secrets.PI_IP }}
-        port: 22
-        username: ${{ secrets.PI_USER }}
-        key: ${{ secrets.PI_SSH_KEY }}
-        script: |
-          # Clone the repository on the Raspberry Pi
-          export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
-          cd /home/${{ secrets.PI_USER }}/kube-manifests
-          git pull
-          cd ~/kube-manifests/k8s/dev
-          kubectl apply -f deployment.yaml -n app-dev
-          kubectk apply -f service.yaml -n app-dev
-          kubectl apply -f cluster-issuer.yaml -n app-dev
-          kubectl apply -f certificate.yaml -n app-dev
-          kubectl apply -f ingress.yaml -n app-dev
-          kubectl rollout restart deployment pi-ui -n app-dev
+    - name: Install cloudflared
+      run: |
+        curl -L https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb -o cloudflared.deb
+        sudo dpkg -i cloudflared.deb
+
+    - name: Deploy to Raspberry Pi (K3s) via Cloudflare Tunnel
+      env:
+        CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
+        CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
+      run: |
+        ssh -o StrictHostKeyChecking=no \
+        -o ProxyCommand="cloudflared access ssh --hostname ${{ secrets.PI_IP }}" \
+        ${{ secrets.PI_USER }}@${{ secrets.PI_IP }} << 'EOF'
+        export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+        cd /home/${{ secrets.PI_USER }}/kube-manifests
+        git pull
+        cd ~/kube-manifests/k8s/dev
+        kubectl apply -f deployment.yaml -n app-dev
+        kubectl apply -f service.yaml -n app-dev
+        kubectl apply -f cluster-issuer.yaml -n app-dev
+        kubectl apply -f certificate.yaml -n app-dev
+        kubectl apply -f ingress.yaml -n app-dev
+        kubectl rollout restart deployment pi-ui -n app-dev
+        EOF
+
+    # - name: Deploy to Raspberry Pi (K3s)
+    #   uses: appleboy/ssh-action@v0.1.10
+    #   with:
+    #     host: ${{ secrets.PI_IP }}
+    #     port: 22
+    #     username: ${{ secrets.PI_USER }}
+    #     key: ${{ secrets.PI_SSH_KEY }}
+    #     script: |
+    #       # Clone the repository on the Raspberry Pi
+    #       export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+    #       cd /home/${{ secrets.PI_USER }}/kube-manifests
+    #       git pull
+    #       cd ~/kube-manifests/k8s/dev
+    #       kubectl apply -f deployment.yaml -n app-dev
+    #       kubectk apply -f service.yaml -n app-dev
+    #       kubectl apply -f cluster-issuer.yaml -n app-dev
+    #       kubectl apply -f certificate.yaml -n app-dev
+    #       kubectl apply -f ingress.yaml -n app-dev
+    #       kubectl rollout restart deployment pi-ui -n app-dev
