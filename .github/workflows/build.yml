@@ -24,6 +24,14 @@ jobs:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+    - name: Cache Docker layers
+      uses: actions/cache@v4
+      with:
+        path: /tmp/.buildx-cache
+        key: ${{ runner.os }}-buildx-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-buildx-
+
     - name: Build & Push Docker Image
       uses: docker/build-push-action@v5
       with:
@@ -31,6 +39,8 @@ jobs:
         push: true
         platforms: linux/arm64,linux/amd64
         tags: erickhdez1997/pi-ui:dev
+        cache-from: type=local,src=/tmp/.buildx-cache
+        cache-to: type=local,dest=/tmp/.buildx-cache,mode=max
 
     # - name: Install cloudflared
     #   run: |
