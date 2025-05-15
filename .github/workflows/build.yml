@@ -59,7 +59,7 @@ jobs:
         CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
         CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
       run: |
-        cloudflared access ssh --hostname ssh.qtpis.com -- ssh -o StrictHostKeyChecking=no github << 'EOF'
+        cloudflared access ssh --hostname ssh.qtpis.com -- github << 'EOF'
           export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
           cd ~/kube-manifests
           git pull
