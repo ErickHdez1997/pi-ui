@@ -24,13 +24,13 @@ jobs:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-    # - name: Cache Docker layers
-    #   uses: actions/cache@v4
-    #   with:
-    #     path: /tmp/.buildx-cache
-    #     key: ${{ runner.os }}-buildx-${{ github.sha }}
-    #     restore-keys: |
-    #       ${{ runner.os }}-buildx-
+    - name: Cache Docker layers
+      uses: actions/cache@v4
+      with:
+        path: /tmp/.buildx-cache
+        key: ${{ runner.os }}-buildx-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-buildx-
 
     - name: Build & Push Docker Image
       uses: docker/build-push-action@v5
@@ -39,9 +39,9 @@ jobs:
         push: true
         platforms: linux/arm64,linux/amd64
         tags: erickhdez1997/pi-ui:dev
-        # cache-from: type=local,src=/tmp/.buildx-cache
-        # cache-to: type=local,dest=/tmp/.buildx-cache,mode=max
-        no-cache: true   # <-- Force bypass cache
+        cache-from: type=local,src=/tmp/.buildx-cache
+        cache-to: type=local,dest=/tmp/.buildx-cache,mode=max
+        # no-cache: true   # <-- Force bypass cache
 
     - name: Deploy to Raspberry Pi (K3s)
       uses: appleboy/ssh-action@v0.1.10
@@ -53,13 +53,10 @@ jobs:
         key: ${{ secrets.PI_SSH_KEY }}
         script: |
           # Clone the repository on the Raspberry Pi
-          export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
           cd /home/${{ secrets.PI_USER }}/kube-manifests
           git pull
           cd ~/kube-manifests/k8s/dev
           kubectl apply -f deployment.yaml -n app-dev
           kubectl apply -f service.yaml -n app-dev
-          kubectl apply -f cluster-issuer.yaml -n app-dev
-          kubectl apply -f certificate.yaml -n app-dev
           kubectl apply -f ingress.yaml -n app-dev
           kubectl rollout restart deployment pi-ui-dev -n app-dev

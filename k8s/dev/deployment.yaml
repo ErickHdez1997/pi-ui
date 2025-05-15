@@ -20,6 +20,7 @@ spec:
       containers:
         - name: pi-ui-dev
           image: erickhdez1997/pi-ui:dev
+          imagePullPolicy: Always
           ports:
             - containerPort: 80
           env:
