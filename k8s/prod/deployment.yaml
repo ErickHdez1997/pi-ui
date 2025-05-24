@@ -1,23 +1,28 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: pi-ui
+  name: pi-ui-prod
   namespace: app-prod
+  labels:
+    name: pi-ui-prod
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
-      app: pi-ui
+      app: pi-ui-prod
+      name: pi-ui-prod
   template:
     metadata:
       labels:
-        app: pi-ui
+        app: pi-ui-prod
+        name: pi-ui-prod
     spec:
       containers:
-        - name: pi-ui
-          image: erickhdez1997/pi-ui:latest
+        - name: pi-ui-prod
+          image: erickhdez1997/pi-ui:prod
+          imagePullPolicy: Always
           ports:
             - containerPort: 80
           env:
             - name: API_URL
-              value: "https://api.yourdomain.com"
+              value: "http://backend.app-prod.svc.cluster.local:8080"

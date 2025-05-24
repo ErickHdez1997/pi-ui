@@ -1,24 +1,20 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: pi-ui-ingress
-  namespace: app-stage
+  name: pi-ui-staging-ingress
+  namespace: app-staging
   annotations:
-    cert-manager.io/cluster-issuer: "letsencrypt-stage"
-    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
+  ingressClassName: "nginx"
   rules:
-  - host: mypi.duckdns.org  # Change to your DuckDNS domain
+  - host: qtpis.com
     http:
       paths:
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: pi-ui
+            name: pi-ui-staging
             port:
               number: 80
-  tls:
-  - hosts:
-    - ehpi.duckdns.org
-    secretName: pi-ui-tls
