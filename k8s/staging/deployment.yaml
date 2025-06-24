@@ -1,23 +1,28 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: pi-ui
-  namespace: app-staging
+  name: pi-ui-prod
+  namespace: app-prod
+  labels:
+    name: pi-ui-prod
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
-      app: pi-ui
+      app: pi-ui-prod
+      name: pi-ui-prod
   template:
     metadata:
       labels:
-        app: pi-ui
+        app: pi-ui-prod
+        name: pi-ui-prod
     spec:
       containers:
-        - name: pi-ui
-          image: erickhdez1997/pi-ui:staging
+        - name: pi-ui-prod
+          image: erickhdez1997/pi-ui:prod
+          imagePullPolicy: Always
           ports:
             - containerPort: 80
           env:
             - name: API_URL
-              value: "http://backend.app-staging.svc.cluster.local:8080"
+              value: "http://backend.app-prod.svc.cluster.local:8080"
