@@ -31,6 +31,20 @@ body::before {
   z-index: -1;
 }
 
+html, body {
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: #1b1b2f;
+  background-image: radial-gradient(#d0a9f5 1.5px, transparent 1.5px);
+  background-size: 30px 30px;
+  background-repeat: repeat;
+  background-attachment: fixed; /* 🔑 this makes it continue on scroll */
+  color: #fff;
+  font-family: 'Caveat', cursive;
+}
+
+
 body {
   background-color: #1b1b2f;
   background-image: radial-gradient(#d0a9f5 1.5px, transparent 1.5px);
