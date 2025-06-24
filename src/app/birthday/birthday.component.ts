@@ -9,4 +9,6 @@ import { CommonModule } from '@angular/common';
   templateUrl: './birthday.component.html',
   styleUrl: './birthday.component.css'
 })
-export class BirthdayComponent {}
+export class BirthdayComponent {
+  showCoupon = false;
+}
