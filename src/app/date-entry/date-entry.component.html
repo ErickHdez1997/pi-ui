@@ -1,0 +1,21 @@
+<div class="form-wrapper mat-typography">
+  <h1 class="mat-headline-4" style="font-family: Roboto, sans-serif;">Hey there...</h1>
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Enter Key</mat-label>
+    <input
+      matInput
+      [(ngModel)]="input"
+      name="input"
+      required
+      #dateModel="ngModel"
+      type="password"
+    />
+    <mat-error *ngIf="this.hasError">
+      Come on, try harder...
+    </mat-error>
+  </mat-form-field>
+
+  <button mat-raised-button color="primary" (click)="checkKey()">
+    Unlock
+  </button>
+</div>

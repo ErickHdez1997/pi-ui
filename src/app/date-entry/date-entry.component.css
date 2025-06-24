@@ -1,0 +1,12 @@
+.form-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 300px;
+  margin: 0 auto;
+  margin-top: 3rem;
+}
+
+.full-width {
+  width: 100%;
+}
